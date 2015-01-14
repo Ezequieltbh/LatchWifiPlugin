@@ -75,7 +75,7 @@ int pairLW(char * code){
 	char * buffer = NULL;
       
 	buffer = pair(code);
-    printf("Account Id:%.64s",buffer+22);
+    	printf("Account Id:%.64s",buffer+22);
 	if( strstr(buffer,"{\"data\":{\"accountId\":") != NULL ){
 
 		file = fopen(FILE_CONFIG,"wt");
@@ -94,13 +94,13 @@ int unpairLW(){
 
 	FILE * file;
 	char * buffer;
-    char command[50];
+    	char command[50];
     
 	buffer = unpair(accountId);
 	if( strstr(buffer,"{}") != NULL ){
 
-        strcat(command,"rm ");
-        strcat(command, FILE_CONFIG);
+	        strcat(command,"rm ");
+	        strcat(command, FILE_CONFIG);
 		system(command);
 		free(buffer);
 		return 1;
