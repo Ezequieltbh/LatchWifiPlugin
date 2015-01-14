@@ -1,0 +1,27 @@
+1. Download hostapd 2.3.4 sources . Execute: git clone git://w1.fi/srv/git/hostap.git
+2. Donwload hostapd.conf (From Github "Latch Wifi Plugin").
+2. Download the Latch Wi-Fi Plugin of Github.
+3. Download the Latch SDK C. Link : https://github.com/ElevenPaths/latch-sdk-c
+3. Execute "sudo apt-get install libnl-dev libcurl4-openssl-dev" for install dependency of hostapd.
+2. Download the utility for install/uninstall the plugin (latchWifiUtility.c) and compile with "gcc -o latchWifiUtility latchWifiUtility.c latchWifi.c latch.c -lcurl -lcrypto -lssl -ldl"
+
+
+4. Change to directory ./hostap/hostapd.
+5. cp defconfig .config
+6. Apply the plugin, copy the "Patch" folder to ./hostap and replaces all.
+7. Execute "gcc -c -o ../src/utils/latch.o ../src/utils/latch.c   && gcc -c -o ../src/utils/latchWifi.o ../src/utils/latchWifi.c"
+8. Append in Makefile:
+
+OBJS += ../src/utils/latchWifi.o
+OBJS += ../src/utils/latch.o
+LIBS += -lcurl -lcrypto -lssl -ldl
+
+9. Execute "make && make install"
+10. Execute "sudo mkdir /etc/hostapd/ && sudo cp ../../hostapd.conf /etc/hostapd/hostapd.conf"
+11. Execute "sudo latchWifiUtility -i [PAIR_CODE_LATCH_HERE]"
+12. Execute "sudo ./hostapd /etc/hostapd/hostapd.conf"
+13. Wireless network with ssid "Testing" and Password 12345678 , ready for clients.
+14. Execute "sudo latchWifiUtility -u [" for uninstall latch Plugin.
+15. Execute "sudo apt-get purge hostapd" for delete hostapd.
+
+
