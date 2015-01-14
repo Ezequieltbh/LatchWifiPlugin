@@ -25,3 +25,4 @@ LIBS += -lcurl -lcrypto -lssl -ldl
 16. Execute "sudo latchWifiUtility -u" for uninstall latch Plugin.
 
 
+NOTE:Agregar en github los 4 archivos faltantes a raiz.	
