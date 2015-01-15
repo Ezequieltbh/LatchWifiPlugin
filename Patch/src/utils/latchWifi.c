@@ -27,8 +27,8 @@
 
 //IMPORTANT!!!
 //Write the Application ID, Secret and the configuration file path here.
-#define APP_ID "UYjWUpLdqF6JvmjPFgLX"
-#define SECRET "zizv8LL8sUs9YGnpLVsUuymXDhDnNdBPBbA3i4nU"
+#define APP_ID " "
+#define SECRET " "
 #define FILE_CONFIG "/etc/latchWifi.conf"
 
 char accountId[65];
@@ -75,7 +75,7 @@ int pairLW(char * code){
 	char * buffer = NULL;
       
 	buffer = pair(code);
-    	printf("Account Id:%.64s",buffer+22);
+    printf("Account Id:%.64s",buffer+22);
 	if( strstr(buffer,"{\"data\":{\"accountId\":") != NULL ){
 
 		file = fopen(FILE_CONFIG,"wt");
@@ -99,8 +99,8 @@ int unpairLW(){
 	buffer = unpair(accountId);
 	if( strstr(buffer,"{}") != NULL ){
 
-	        strcat(command,"rm ");
-	        strcat(command, FILE_CONFIG);
+	    strcat(command,"rm ");
+	    strcat(command, FILE_CONFIG);
 		system(command);
 		free(buffer);
 		return 1;

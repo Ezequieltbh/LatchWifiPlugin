@@ -23,14 +23,15 @@
 #include "latchWifi.h"
 #include "latch.h"
 
+//IMPORTANT!!
 //Write the Application ID and Secret here.
-#define APP_ID "UYjWUpLdqF6JvmjPFgLX"
-#define SECRET "zizv8LL8sUs9YGnpLVsUuymXDhDnNdBPBbA3i4nU"
+#define APP_ID " "
+#define SECRET " "
 
 void usage(){
 
     printf("Latch Wifi Plugin installer/uninstaller\n");
-    printf("2015, Tavella Ezequiel @EzequielTBH\n");
+    printf("Copyright (C) 2015, Tavella Ezequiel (@EzequielTBH)\n");
     printf("Usage: latchWifiUtility [Options]\n");
     printf("Options:\n");
     printf("\t-i [Pair Code]\t Pair with Latch\n");

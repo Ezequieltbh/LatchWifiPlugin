@@ -1,28 +1,106 @@
+2015, Ezequiel Tavella (@EzequielTBH)
+Video Demo: https://www.youtube.com/watch?v=PFMXejWYTYs
+
+This document contains instructions for installation and use for the "Latch Wifi Plugin".
+
+Modifying the source code hostapd, you can make networks "WPA-PSK" and "WPA2-PSK" will support latch.
+
+First of all remember to write you ApplicationID and Secret in :
+    *latchWifi.c and latchWifiUtility.c in the repository root.
+    *latchWifi.c in /Patch/src/utils
+The files are the same in diferents folders, it's just an ease to install.
+
+Also in "latchWifi.c" you can change "FILE_CONFIG" to change the location of saved of accountID and "OPTION_ERROR" change the behavior in case of error 
+(Unable to connect to latch or API responds with error)
+
+Note that when using privileges latchWifiUtility need read / write in the "FILE_CONFIG" defined.
+
+Installation and use step by step:
+
 1. Download hostapd 2.3.4 sources . Execute: git clone git://w1.fi/srv/git/hostap.git
+
+   This will create a folder called "hostap" which will be the hostapd source code, the program responsible for creating the Wi-Fi network.
+
 2. Download hostapd.conf (From Github "Latch Wifi Plugin" repository).
+   
+   hostapd.conf is the hostapd configuration file, it contains among other things the SSID, network password, encryption type, etc.
+   More info in this example: http://w1.fi/cgit/hostap/plain/hostapd/hostapd.conf
+
 3. Download the Folder "Patch" (From Github "Latch Wifi Plugin" repository).
+
+   This contains two folders:
+        * "hostapd", which contains the main.c file, it was modified to initialize the configuration Latch and seek accountID.
+        * "src", divided into : 
+                    ->"ap" containing wpa_auth.c, it was modified to check the status of Latch,
+                     this is done by modifying the "PTKSTART" status before sending the first message of "4-way Handshake".
+
+                    ->"utils"  This contains latch.c, latch.h are Latch SDK and 
+                    latchWifi.c, latchWifi.h containing functions used to initialize, pairing, check status and des-pairing latch.
+                                
 4. Execute "sudo apt-get install libnl-dev libcurl4-openssl-dev" for install dependency of hostapd.
-5. Download the utility for install/uninstall the plugin (latchWifiUtility.c) and compile
+
+    "Openssl and libcurl" are necessary for the latch sdk, while "libnl-dev" is required to compile hostapd.
+
+5. Download the utility for install,uninstall and check the status of latch (latchWifiUtility.c) and compile
    with "gcc -o latchWifiUtility latchWifiUtility.c latchWifi.c latch.c -lcurl -lcrypto -lssl -ldl"
 
+   Obviously, "latchWifiUtility.c latchWifi.c latch.c" must be in the same folder, otherwise you have to modify the command to indicate where they are located.
 
 6. Change to directory ./hostap/hostapd.
 7. cp defconfig .config
+   
+   This is necessary to successfully compile hostapd 
+
 8. Apply the plugin, copy the "Patch" folder to ./hostap and replaces all.
+
+   In this step, modifying the source code to add support to latch.
+
 9. Execute 
   "gcc -c -o ../src/utils/latch.o ../src/utils/latch.c   && gcc -c -o ../src/utils/latchWifi.o ../src/utils/latchWifi.c"
+
+   You need to compile a "Objects file" the libraries for compilation then be linked.
+
 10. Append in Makefile:
 
 OBJS += ../src/utils/latchWifi.o
 OBJS += ../src/utils/latch.o
 LIBS += -lcurl -lcrypto -lssl -ldl
 
-11. Execute "make && make install"
+
+This will cause a compile time, the make command link and find the libraries and "Objects files"
+
+11. Execute "make"
+
+    Compile time!, Cross your fingers!
+
 12. Execute "sudo mkdir /etc/hostapd/ && sudo cp ../../hostapd.conf /etc/hostapd/hostapd.conf"
-13. Execute "sudo latchWifiUtility -i [PAIR_CODE_LATCH_HERE]" , Now Latch is paired.
+    
+    The "/ etc / hostapd" folder is created and hostapd.conf configuration file is placed there.
+    It can be placed anywhere else but in step 14 would have to modify the command with the correct path.    
+    
+13. Execute "sudo latchWifiUtility -i [PAIR_CODE_LATCH_HERE]"
+    
+    * With the option "-i" latch is paired and saves the accountID in "/etc/latchWifi.conf",
+    this route can be modified by changing the "latchWifi.c" file "FILE_CONFIG" define , which is in the folder "/Patch/src/utils"
+
+    * With the option "-s" latch status is queried and the user can see it.
+    
+    * With the option "-u", the file indicated by "FILE_CONFIG" is deleted, which by default is "/etc/latchWifi.conf"
+    
+    * With the "-h" option, support shown
+
 14. Execute "sudo ./hostapd /etc/hostapd/hostapd.conf", Start the Wifi Network.
-15. Wireless network with ssid "Testing" and Password 12345678 , ready for clients.
+
+    Hostapd need root privileges to control the interfaces, if the hostapd.conf file is in another location, adjust the command.
+
+15. Wireless network with ssid "Testing" and Password 12345678 , This ready for client connections.
+
+    The ssid and password can be changed at hostapd.conf, read the link posted above.
+    Each time a client attempts to connect, is verified that the password is correct and the state of latch,
+    if the password is correct and latch is unlocked the client will connect.
+    If the password is incorrect or the state of latch is locked client could not connect.
+
 16. Execute "sudo latchWifiUtility -u" for uninstall latch Plugin.
 
+    This eliminates the latch paring, and delete the referenced "FILE_CONFIG" file, which is "/etc/latchWifi.conf" by default.
 
-NOTE:Agregar en github los 4 archivos faltantes a raiz.	
